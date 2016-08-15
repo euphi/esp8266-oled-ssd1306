@@ -25,6 +25,8 @@
  */
 
 #include "OLEDDisplayUi.h"
+#include <OLEDFrame.h>
+#include <OLEDOverlay.h>
 
 OLEDDisplayUi::OLEDDisplayUi(OLEDDisplay *display) {
   this->display = display;
@@ -101,17 +103,6 @@ void OLEDDisplayUi::setInactiveSymbol(const char* symbol) {
 // -/----- Frame settings -----\-
 void OLEDDisplayUi::setFrameAnimation(AnimationDirection dir) {
   this->frameAnimationDirection = dir;
-}
-void OLEDDisplayUi::setFrames(FrameCallback* frameFunctions, uint8_t frameCount) {
-  this->frameFunctions = frameFunctions;
-  this->frameCount     = frameCount;
-  this->resetState();
-}
-
-// -/----- Overlays ------\-
-void OLEDDisplayUi::setOverlays(OverlayCallback* overlayFunctions, uint8_t overlayCount){
-  this->overlayFunctions = overlayFunctions;
-  this->overlayCount     = overlayCount;
 }
 
 // -/----- Loading Process -----\-
@@ -281,14 +272,13 @@ void OLEDDisplayUi::drawFrame(){
 
        bool drawenCurrentFrame;
 
-
        // Prope each frameFunction for the indicator Drawen state
        this->enableIndicator();
-       (this->frameFunctions[this->state.currentFrame])(this->display, &this->state, x, y);
+       //(this->frameFunctions[this->state.currentFrame])(this->display, &this->state, x, y);
        drawenCurrentFrame = this->state.isIndicatorDrawen;
 
        this->enableIndicator();
-       (this->frameFunctions[this->getNextFrameNumber()])(this->display, &this->state, x1, y1);
+       //(this->frameFunctions[this->getNextFrameNumber()])(this->display, &this->state, x1, y1);
 
        // Build up the indicatorDrawState
        if (drawenCurrentFrame && !this->state.isIndicatorDrawen) {
@@ -313,7 +303,11 @@ void OLEDDisplayUi::drawFrame(){
       // And set indicatorDrawState to "not known yet"
       this->indicatorDrawState = 0;
       this->enableIndicator();
-      (this->frameFunctions[this->state.currentFrame])(this->display, &this->state, 0, 0);
+
+      //(this->frameFunctions[this->state.currentFrame])(this->display, &this->state, 0, 0);
+      OLEDFrame* frame = OLEDFrame::getFrame(0);
+      if (frame) frame->drawFrame(display, &state, 0,0);
+
       break;
   }
 }
@@ -391,9 +385,8 @@ void OLEDDisplayUi::drawIndicator() {
 }
 
 void OLEDDisplayUi::drawOverlays() {
- for (uint8_t i=0;i<this->overlayCount;i++){
-    (this->overlayFunctions[i])(this->display, &this->state);
- }
+    OLEDOverlay* overlay = OLEDOverlay::get(0);
+    if (overlay) overlay->drawOverlay(*display, state, 0);
 }
 
 uint8_t OLEDDisplayUi::getNextFrameNumber(){

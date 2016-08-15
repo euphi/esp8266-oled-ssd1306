@@ -30,6 +30,7 @@
 #include <Arduino.h>
 #include "OLEDDisplay.h"
 
+
 //#define DEBUG_OLEDDISPLAYUI(...) Serial.printf( __VA_ARGS__ )
 
 #ifndef DEBUG_OLEDDISPLAYUI
@@ -254,19 +255,6 @@ class OLEDDisplayUi {
      * Configure what animation is used to transition from one frame to another
      */
     void setFrameAnimation(AnimationDirection dir);
-
-    /**
-     * Add frame drawing functions
-     */
-    void setFrames(FrameCallback* frameFunctions, uint8_t frameCount);
-
-    // Overlay
-
-    /**
-     * Add overlays drawing functions that are draw independent of the Frames
-     */
-    void setOverlays(OverlayCallback* overlayFunctions, uint8_t overlayCount);
-
 
     // Loading animation
     /**
