@@ -219,10 +219,11 @@ void OLEDDisplayUi::tick() {
 
   this->display->clear();
   this->drawFrame();
-  if (shouldDrawIndicators) {
-    this->drawIndicator();
-  }
+//  if (shouldDrawIndicators) {
+//    this->drawIndicator();
+//  }
   this->drawOverlays();
+
   this->display->display();
 }
 
@@ -305,9 +306,8 @@ void OLEDDisplayUi::drawFrame(){
       this->enableIndicator();
 
       //(this->frameFunctions[this->state.currentFrame])(this->display, &this->state, 0, 0);
-      OLEDFrame* frame = OLEDFrame::getFrame(0);
-      if (frame) frame->drawFrame(display, &state, 0,0);
-
+      OLEDFrame* frame = OLEDFrame::get(this->state.currentFrame);
+      if (frame) frame->drawFrame(*display, state, 0,0);
       break;
   }
 }
@@ -385,8 +385,10 @@ void OLEDDisplayUi::drawIndicator() {
 }
 
 void OLEDDisplayUi::drawOverlays() {
-    OLEDOverlay* overlay = OLEDOverlay::get(0);
-    if (overlay) overlay->drawOverlay(*display, state, 0);
+	for (OLEDOverlay* overlay : OLEDOverlay::overlays )
+	{
+		if (overlay) overlay->drawOverlay(*display, state, 0);
+	}
 }
 
 uint8_t OLEDDisplayUi::getNextFrameNumber(){

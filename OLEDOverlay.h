@@ -8,7 +8,10 @@
 #ifndef LIB_ESP8266_OLED_SSD1306_OLEDOVERLAY_H_
 #define LIB_ESP8266_OLED_SSD1306_OLEDOVERLAY_H_
 
+#include <vector>
+
 #include <OLEDDisplayUi.h>
+
 
 class OLEDOverlay {
 public:
@@ -17,15 +20,13 @@ public:
 	virtual void drawOverlay(OLEDDisplay& display,  OLEDDisplayUiState& state, uint8_t idx) = 0;
 
 private:
-	OLEDOverlay* _next;
-    static OLEDOverlay* _first;
-    static OLEDOverlay* _last;
-    static uint8_t _nodeCount;
+    friend class OLEDDisplayUi;
+	static std::vector<OLEDOverlay*> overlays;
 
 public:
-	uint8_t count() {return _nodeCount;};
+	static uint8_t count() {return overlays.size();};
+	static OLEDOverlay* get(uint8_t idx) {return (idx < count()) ? overlays[idx] : nullptr;};
 
-	static OLEDOverlay* get(uint8_t idx);
 
 };
 

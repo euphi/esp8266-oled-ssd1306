@@ -8,6 +8,8 @@
 #ifndef LIB_ESP8266_OLED_SSD1306_OLEDFRAME_H_
 #define LIB_ESP8266_OLED_SSD1306_OLEDFRAME_H_
 
+#include <vector>
+
 #include <OLEDDisplay.h>
 #include <OLEDDisplayUi.h>
 
@@ -15,20 +17,15 @@ class OLEDFrame {
 
 public:
 	OLEDFrame();
-
-	virtual void drawFrame(OLEDDisplay *display,  OLEDDisplayUiState* state, int16_t x, int16_t y) = 0;
+	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) = 0;
 
 private:
-	OLEDFrame* _next;
-    static OLEDFrame* _first;
-    static OLEDFrame* _last;
-    static uint8_t _nodeCount;
+    static std::vector<OLEDFrame*> frames;
 
 public:
-	uint8_t count() {return _nodeCount;};
+	static uint8_t count() {return frames.size();};
+	static OLEDFrame* get(uint8_t idx) {return (idx < count()) ? frames[idx]: 0;};
 
-	static OLEDFrame* getFrame(uint8_t idx);
 };
-
 
 #endif /* LIB_ESP8266_OLED_SSD1306_OLEDFRAME_H_ */
