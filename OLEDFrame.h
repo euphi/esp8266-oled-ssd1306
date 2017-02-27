@@ -18,6 +18,7 @@ class OLEDFrame {
 public:
 	OLEDFrame();
 	virtual void drawFrame(OLEDDisplay &display,  OLEDDisplayUiState& state, int16_t x, int16_t y) = 0;
+	virtual const char * getFrameTitle() const {return "";}
 
 private:
     static std::vector<OLEDFrame*> frames;

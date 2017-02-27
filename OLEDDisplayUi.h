@@ -123,7 +123,7 @@ class OLEDDisplayUi {
     bool                autoTransition            = true;
 
     FrameCallback*      frameFunctions			  = 0;
-    uint8_t             frameCount                = 0;
+    //uint8_t             frameCount                = 0;
 
     // Internally used to transition to a specific frame
     int8_t              nextFrameNumber           = -1;

@@ -150,7 +150,9 @@ void OLEDDisplayUi::previousFrame() {
 }
 
 void OLEDDisplayUi::switchToFrame(uint8_t frame) {
-  if (frame >= this->frameCount) return;
+  // ### DEBUG
+  Serial.printf("switchToFrame %d (framecount: %d, currentFrame: %d)", frame, OLEDFrame::count(), state.currentFrame);
+  if (frame >= OLEDFrame::count()) return;
   this->state.ticksSinceLastStateSwitch = 0;
   if (frame == this->state.currentFrame) return;
   this->state.frameState = FIXED;
@@ -159,7 +161,7 @@ void OLEDDisplayUi::switchToFrame(uint8_t frame) {
 }
 
 void OLEDDisplayUi::transitionToFrame(uint8_t frame) {
-  if (frame >= this->frameCount) return;
+  if (frame >= OLEDFrame::count()) return;
   this->state.ticksSinceLastStateSwitch = 0;
   if (frame == this->state.currentFrame) return;
   this->nextFrameNumber = frame;
@@ -275,11 +277,18 @@ void OLEDDisplayUi::drawFrame(){
 
        // Prope each frameFunction for the indicator Drawen state
        this->enableIndicator();
+       OLEDFrame* frame = OLEDFrame::get(this->state.currentFrame);
+       if (frame) frame->drawFrame(*display, state, x,y);
+
        //(this->frameFunctions[this->state.currentFrame])(this->display, &this->state, x, y);
+
        drawenCurrentFrame = this->state.isIndicatorDrawen;
 
        this->enableIndicator();
+       frame = OLEDFrame::get(this->getNextFrameNumber());
+       if (frame) frame->drawFrame(*display, state, x1,y1);
        //(this->frameFunctions[this->getNextFrameNumber()])(this->display, &this->state, x1, y1);
+
 
        // Build up the indicatorDrawState
        if (drawenCurrentFrame && !this->state.isIndicatorDrawen) {
@@ -305,7 +314,6 @@ void OLEDDisplayUi::drawFrame(){
       this->indicatorDrawState = 0;
       this->enableIndicator();
 
-      //(this->frameFunctions[this->state.currentFrame])(this->display, &this->state, 0, 0);
       OLEDFrame* frame = OLEDFrame::get(this->state.currentFrame);
       if (frame) frame->drawFrame(*display, state, 0,0);
       break;
@@ -335,7 +343,7 @@ void OLEDDisplayUi::drawIndicator() {
         posOfHighlightFrame = frameToHighlight;
         break;
       case RIGHT_LEFT:
-        posOfHighlightFrame = this->frameCount - frameToHighlight;
+        posOfHighlightFrame = OLEDFrame::count() - frameToHighlight;
         break;
     }
 
@@ -350,10 +358,10 @@ void OLEDDisplayUi::drawIndicator() {
         break;
     }
 
-    uint16_t frameStartPos = (12 * frameCount / 2);
+    uint16_t frameStartPos = (12 * OLEDFrame::count() / 2);
     const char *image;
     uint16_t x,y;
-    for (byte i = 0; i < this->frameCount; i++) {
+    for (byte i = 0; i < OLEDFrame::count(); i++) {
 
       switch (this->indicatorPosition){
         case TOP:
@@ -393,5 +401,5 @@ void OLEDDisplayUi::drawOverlays() {
 
 uint8_t OLEDDisplayUi::getNextFrameNumber(){
   if (this->nextFrameNumber != -1) return this->nextFrameNumber;
-  return (this->state.currentFrame + this->frameCount + this->state.frameTransitionDirection) % this->frameCount;
+  return (this->state.currentFrame + OLEDFrame::count() + this->state.frameTransitionDirection) % OLEDFrame::count();
 }
