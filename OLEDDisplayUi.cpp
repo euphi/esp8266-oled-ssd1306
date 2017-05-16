@@ -107,6 +107,10 @@ void OLEDDisplayUi::setFrameAnimation(AnimationDirection dir) {
 
 // -/----- Loading Process -----\-
 
+void OLEDDisplayUi::setLoadingDrawFunction(LoadingDrawFunction loadingDrawFunction) {
+  this->loadingDrawFunction = loadingDrawFunction;
+}
+
 void OLEDDisplayUi::runLoadingProcess(LoadingStage* stages, uint8_t stagesCount) {
   uint8_t progress = 0;
   uint8_t increment = 100 / stagesCount;
@@ -376,11 +380,11 @@ void OLEDDisplayUi::drawIndicator() {
           break;
         case RIGHT:
           x = 120 + (8 * indicatorFadeProgress);
-          y = 32 - frameStartPos + 12 * i;
+          y = 32 - frameStartPos + 2 + 12 * i;
           break;
         case LEFT:
           x = 0 - (8 * indicatorFadeProgress);
-          y = 32 - frameStartPos + 12 * i;
+          y = 32 - frameStartPos + 2 + 12 * i;
           break;
       }
 
