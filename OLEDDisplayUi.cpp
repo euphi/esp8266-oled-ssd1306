@@ -168,7 +168,9 @@ void OLEDDisplayUi::transitionToFrame(uint8_t frame) {
   this->lastTransitionDirection = this->state.frameTransitionDirection;
   this->state.manuelControll = true;
   this->state.frameState = IN_TRANSITION;
-  this->state.frameTransitionDirection = frame < this->state.currentFrame ? -1 : 1;
+  this->state.frameTransitionDirection = ((frame != 0) // wrap right from end to first
+		  && (frame < this->state.currentFrame)) // normal transition
+				  || frame==(OLEDFrame::count()-1) ? -1 : 1; // wrap left from first to end
 }
 
 
